@@ -72,9 +72,8 @@ class Scene(object):
     clock = pygame.time.Clock()
     self.done = False
     while not self.done:
-      for event in pygame.event.get():
-        yield event
+      self.handle_events()
       self.draw()
       pygame.display.flip()
-      pygame.mouse.set_pos(self.center)
+      #pygame.mouse.set_pos(self.center)
       clock.tick(self.framerate)

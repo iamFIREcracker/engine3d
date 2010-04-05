@@ -10,10 +10,62 @@ from engine3d.objects import Axis
 from engine3d.objects import Cube
 from engine3d.objects import Wall
 
-def myrange(start, stop, step):
-  while start < stop:
-    yield start
-    start += step
+class MyScene(Scene):
+  def __init__(self, width, height, framerate, objects, lights):
+    super(MyScene, self).__init__(width, height, framerate, objects, lights)
+
+  def handle_events(self):
+    for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+        self.done = True
+      elif event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_ESCAPE:
+          self.done = True
+        elif event.key == pygame.K_w:
+          self.camera.forward(1)
+        elif event.key == pygame.K_s:
+          self.camera.forward(-1)
+        elif event.key == pygame.K_LSHIFT:
+          self.camera.up(1)
+        elif event.key == pygame.K_c:
+          self.camera.up(-1)
+        elif event.key == pygame.K_d:
+          self.camera.right(1)
+        elif event.key == pygame.K_a:
+          self.camera.right(-1)
+        elif event.key == pygame.K_UP:
+          self.camera.pitch(5)
+        elif event.key == pygame.K_DOWN:
+          self.camera.pitch(-5)
+        elif event.key == pygame.K_LEFT:
+          self.camera.yaw(5)
+        elif event.key == pygame.K_RIGHT:
+          self.camera.yaw(-5)
+      elif event.type == pygame.MOUSEMOTION:
+        (_, _, az) = self.camera.angle
+        (x, y) = self.convert_dev_to_user(*event.pos)
+        self.camera.rotate((y * 22.5, -x * 22.5, 0))
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w]:
+      self.camera.forward(1)
+    elif keys[pygame.K_s]:
+      self.camera.forward(-1)
+    elif keys[pygame.K_LSHIFT]:
+      self.camera.up(1)
+    elif keys[pygame.K_c]:
+      self.camera.up(-1)
+    elif keys[pygame.K_d]:
+      self.camera.right(1)
+    elif keys[pygame.K_a]:
+      self.camera.right(-1)
+    elif keys[pygame.K_UP]:
+      self.camera.pitch(5)
+    elif keys[pygame.K_DOWN]:
+      self.camera.pitch(-5)
+    elif keys[pygame.K_LEFT]:
+      self.camera.yaw(5)
+    elif keys[pygame.K_RIGHT]:
+      self.camera.yaw(-5)
 
 def main(argv):
   if (len(argv) != 4):
@@ -39,38 +91,9 @@ def main(argv):
                   diffuse=(1.0, 1.0, 1.0, 1.0),
                  ),
            ]
-  s = Scene(width, height, framerate, objects, lights)
+  s = MyScene(width, height, framerate, objects, lights)
   s.camera.center = (0, 0, 10)
-  for event in s.mainloop():
-    if event.type == pygame.QUIT:
-      s.done = True
-    elif event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_ESCAPE:
-        s.done = True
-      elif event.key == pygame.K_w:
-        s.camera.forward(1)
-      elif event.key == pygame.K_s:
-        s.camera.forward(-1)
-      elif event.key == pygame.K_LSHIFT:
-        s.camera.up(1)
-      elif event.key == pygame.K_c:
-        s.camera.up(-1)
-      elif event.key == pygame.K_d:
-        s.camera.right(1)
-      elif event.key == pygame.K_a:
-        s.camera.right(-1)
-      elif event.key == pygame.K_UP:
-        s.camera.pitch(5)
-      elif event.key == pygame.K_DOWN:
-        s.camera.pitch(-5)
-      elif event.key == pygame.K_LEFT:
-        s.camera.yaw(5)
-      elif event.key == pygame.K_RIGHT:
-        s.camera.yaw(-5)
-    elif event.type == pygame.MOUSEMOTION:
-      (_, _, az) = s.camera.angle
-      (x, y) = s.convert_dev_to_user(*event.pos)
-      s.camera.rotate((y * 22.5, -x * 22.5, 0))
+  s.mainloop()
 
 if __name__ == '__main__':
   sys.exit(main(sys.argv))
