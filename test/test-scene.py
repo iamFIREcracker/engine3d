@@ -13,6 +13,8 @@ from engine3d.objects import Wall
 class MyScene(Scene):
   def __init__(self, width, height, framerate, objects, lights):
     super(MyScene, self).__init__(width, height, framerate, objects, lights)
+    
+    self.old = self.convert_dev_to_user(*self.center)
 
   def handle_events(self):
     for event in pygame.event.get():
@@ -42,9 +44,15 @@ class MyScene(Scene):
         elif event.key == pygame.K_RIGHT:
           self.camera.yaw(-5)
       elif event.type == pygame.MOUSEMOTION:
-        (_, _, az) = self.camera.angle
+        (ox, oy) = self.old
         (x, y) = self.convert_dev_to_user(*event.pos)
-        self.camera.rotate((y * 22.5, -x * 22.5, 0))
+        self.camera.rotate(((y - oy) * 22.5, -(x - ox) * 22.5, 0))
+        if x > 0.8 or x < 0.8 or y > 0.8 or y < -0.8:
+          self.old = self.convert_dev_to_user(*self.center)
+          pygame.mouse.set_pos(*self.center)
+        else:
+          self.old = (x, y)
+
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
       self.camera.forward(1)
