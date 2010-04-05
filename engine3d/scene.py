@@ -7,17 +7,18 @@ from OpenGL import GL as gl
 from OpenGL import GLU as glu
 
 from engine3d.camera import Camera
+from engine3d.lights import LightSystem
 
 class Scene(object):
-  def __init__(self, width, height, framerate, objects, lights):
+  def __init__(self, width, height, framerate):
     self.width = width
     self.height = height
     self.center = (width / 2, height / 2)
     self.framerate = framerate
     self.camera = Camera()
 
-    self.objects = objects
-    self.lights = lights
+    self.light_system = LightSystem()
+    self.objects = []
 
   def resize(self):
     if self.height == 0:
@@ -49,10 +50,7 @@ class Scene(object):
 
   def draw(self):
     self.camera.draw()
-
-    for item in self.lights:
-      item.draw()
-
+    self.light_system.draw()
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
     for item in self.objects:
       gl.glPushMatrix()
@@ -64,7 +62,7 @@ class Scene(object):
     pygame.init()
     pygame.display.set_mode((self.width, self.height), video_flags)
     pygame.mouse.set_visible(False)
-    pygame.mouse.set_pos(self.center)
+    pygame.event.set_grab(True)
 
     self.resize()
     self.gl_init()
@@ -75,5 +73,4 @@ class Scene(object):
       self.handle_events()
       self.draw()
       pygame.display.flip()
-      #pygame.mouse.set_pos(self.center)
       clock.tick(self.framerate)

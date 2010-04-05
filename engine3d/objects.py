@@ -25,15 +25,14 @@ class Axis(object):
         gl.glVertex3fv(p)
     gl.glEnd()
 
-
 class Cube(object):
   def __init__(self, center, r=0.5):
     self.center = center
     self.rotation = (0, 0, 0)
-    self.points = ((r, -r, -r), (r, r, -r),
-                   (-r, r, -r), (-r, -r, -r),
-                   (r, -r, r), (r, r, r),
+    self.points = ((r, -r, r), (r, r, r),
                    (-r, r, r), (-r, -r, r),
+                   (r, -r, -r), (r, r, -r),
+                   (-r, r, -r), (-r, -r, -r),
                   )
     self.faces = ((0, 1, 2, 3),
                   (3, 2, 6, 7),
@@ -64,6 +63,8 @@ class Cube(object):
         gl.glColor3fv(color)
         gl.glVertex3fv(self.points[p])
     gl.glEnd()
+
+    self.rotate((1.0, 1.0, 0.0))
 
   def rotate(self, rotation):
     self.rotation = map(sum, zip(self.rotation, rotation))
