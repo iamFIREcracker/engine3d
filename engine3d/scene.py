@@ -49,7 +49,7 @@ class Scene(object):
 
   def draw(self):
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
-    self.camera.draw()
+    self.camera.place()
     self.light_system.place()
     for item in self.objects:
       gl.glPushMatrix()

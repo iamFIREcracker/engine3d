@@ -14,7 +14,7 @@ class Camera(object):
     self.angle = (0.0, 0.0, 0.0)
     self.rotated = True
 
-  def draw(self):
+  def place(self):
     (cx, cy, cz) = self.center
     (ax, ay, az) = self.angle
 
