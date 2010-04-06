@@ -37,7 +37,6 @@ class Scene(object):
     gl.glEnable(gl.GL_DEPTH_TEST)
     gl.glDepthFunc(gl.GL_LEQUAL)
     gl.glHint(gl.GL_PERSPECTIVE_CORRECTION_HINT, gl.GL_NICEST)
-    #gl.glEnable(gl.GL_LIGHTING)
 
   def convert_dev_to_user(self, x, y):
     (centerx, centery) = self.center
@@ -49,9 +48,9 @@ class Scene(object):
     pass
 
   def draw(self):
+    gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
     self.camera.draw()
     self.light_system.draw()
-    gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
     for item in self.objects:
       gl.glPushMatrix()
       item.draw()

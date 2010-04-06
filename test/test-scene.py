@@ -20,9 +20,12 @@ class MyScene(Scene):
         self.done = True
       elif event.type == pygame.VIDEOEXPOSE:
         pygame.mouse.get_rel()
+      elif event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_ESCAPE:
+          self.done = True
+        elif event.key == pygame.K_l:
+          self.light_system.toggle()
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_ESCAPE]:
-      self.done = True
     if keys[pygame.K_w]:
       self.camera.forward(1)
     if keys[pygame.K_s]:
@@ -60,9 +63,7 @@ def main(argv):
   s = MyScene(width, height, framerate)
   s.camera.center = (0, 0, 10)
   s.light_system.add(Light(id=1,
-                           center=(0.0, 0.0, 10.0, 1.0),
-                           ambient=(1.0, 1.0, 1.0, 1.0),
-                           diffuse=(1.0, 1.0, 1.0, 1.0)))
+                           center=(-2.0, 1.0, 3.0, 1.0)))
   s.objects = [Axis((0, 0, 0)),
                Cube((0, 0, 0)),
                Wall((0, -5, 0), (90, 0, 0), 50.0, 50.0, 1.0), # bottom
