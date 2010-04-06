@@ -25,6 +25,11 @@ class MyScene(Scene):
           self.done = True
         elif event.key == pygame.K_l:
           self.light_system.toggle()
+      elif event.type == pygame.MOUSEBUTTONDOWN:
+        if event.button == 4:
+          self.camera.forward(1)
+        elif event.button == 5:
+          self.camera.forward(-1)
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
       self.camera.forward(1)
