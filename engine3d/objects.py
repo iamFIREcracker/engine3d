@@ -41,6 +41,13 @@ class Cube(object):
                   (1, 5, 6, 2),
                   (4, 0, 3, 7),
                  )
+    self.normals = ((0, 0, 1),
+                    (-1, 0, 0),
+                    (0, 0, -1),
+                    (1, 0, 0),
+                    (0, 1, 0),
+                    (0, -1, 0),
+                   )
     self.colors = ((0, 0, 1),
                    (0, 1, 0),
                    (0, 1, 1),
@@ -58,9 +65,10 @@ class Cube(object):
     gl.glRotatef(rz, 0, 0, 1)
     
     gl.glBegin(gl.GL_QUADS)
-    for (color, face) in zip(self.colors, self.faces):
+    for (face, normal, color) in zip(self.faces, self.normals, self.colors):
+      gl.glNormal3fv(normal)
+      gl.glColor3fv(color)
       for p in face:
-        gl.glColor3fv(color)
         gl.glVertex3fv(self.points[p])
     gl.glEnd()
 
