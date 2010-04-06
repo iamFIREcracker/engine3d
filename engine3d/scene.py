@@ -50,7 +50,7 @@ class Scene(object):
   def draw(self):
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
     self.camera.draw()
-    self.light_system.draw()
+    self.light_system.place()
     for item in self.objects:
       gl.glPushMatrix()
       item.draw()
@@ -65,6 +65,7 @@ class Scene(object):
 
     self.resize()
     self.gl_init()
+    self.light_system.enable()
 
     clock = pygame.time.Clock()
     self.done = False

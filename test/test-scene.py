@@ -67,8 +67,7 @@ def main(argv):
 
   s = MyScene(width, height, framerate)
   s.camera.center = (0, 0, 10)
-  s.light_system.add(Light(id=1,
-                           center=(-2.0, 1.0, 3.0, 1.0)))
+  s.light_system.add(Light((-10, 0, 10, 1.0)))
   s.objects = [Axis((0, 0, 0)),
                Cube((0, 0, 0)),
                Wall((0, -5, 0), (90, 0, 0), 50.0, 50.0, 1.0), # bottom
