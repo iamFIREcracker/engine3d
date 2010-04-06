@@ -47,14 +47,12 @@ class Scene(object):
   def handle_events(self):
     pass
 
-  def draw(self):
+  def render(self):
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
     self.camera.place()
     self.light_system.place()
     for item in self.objects:
-      gl.glPushMatrix()
-      item.draw()
-      gl.glPopMatrix()
+      item.render()
 
   def mainloop(self):
     video_flags = pygame.OPENGL | pygame.DOUBLEBUF
@@ -71,6 +69,6 @@ class Scene(object):
     self.done = False
     while not self.done:
       self.handle_events()
-      self.draw()
+      self.render()
       pygame.display.flip()
       clock.tick(self.framerate)

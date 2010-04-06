@@ -14,7 +14,7 @@ class Light(object):
 
   def place(self):
     gl.glLightfv(self.lid, gl.GL_POSITION, self.center)
-    print gl.glGetLightfv(self.lid, gl.GL_POSITION)
+    #print gl.glGetLightfv(self.lid, gl.GL_POSITION)
 
 class LightSystem(object):
   def __init__(self):

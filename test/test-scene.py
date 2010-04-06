@@ -6,7 +6,6 @@ import pygame
 
 from engine3d.scene import Scene
 from engine3d.lights import Light
-from engine3d.objects import Axis
 from engine3d.objects import Cube
 from engine3d.objects import Wall
 
@@ -68,10 +67,9 @@ def main(argv):
   s = MyScene(width, height, framerate)
   s.camera.center = (0, 0, 10)
   s.light_system.add(Light((-10, 0, 10, 1.0)))
-  s.objects = [Axis((0, 0, 0)),
-               Cube((0, 0, 0)),
-               Wall((0, -5, 0), (90, 0, 0), 50.0, 50.0, 1.0), # bottom
-               Wall((0, 5, 0), (90, 0, 0), 50.0, 50.0, 1.0),  # top
+  s.objects = [Cube((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
+               Wall((0, -5, 0), (90, 0, 0), 50.0, 50.0), # bottom
+               Wall((0, 5, 0), (90, 0, 0), 50.0, 50.0),  # top
               ] 
   s.mainloop()
 

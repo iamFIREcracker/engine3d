@@ -2,33 +2,36 @@
 
 from OpenGL import GL as gl
 
-class Axis(object):
-  def __init__(self, center, r=10):
-    self.center = center
-    self.points = ((0, 0, 0), (r, 0, 0),
-                   (0, 0, 0), (0, r, 0),
-                   (0, 0, 0), (0, 0, r),
-                  )
+def draw_quads(obj):
+  gl.glBegin(gl.GL_QUADS)
+  for (face, normal, color) in zip(obj.faces, obj.normals, obj.colors):
+    gl.glNormal3fv(normal)
+    gl.glColor3fv(color)
+    for p in face:
+      gl.glVertex3fv(obj.points[p])
+  gl.glEnd()
 
-  def draw(self):
+class Object(object):
+  def render(self):
+    (ax, ay, az) = self.angle
+
+    gl.glPushMatrix()
+    
     gl.glTranslatef(*self.center)
+    gl.glRotatef(ax, 1, 0, 0)
+    gl.glRotatef(ay, 0, 1, 0)
+    gl.glRotatef(az, 0, 0, 1)
+    self.draw()
 
-    gl.glBegin(gl.GL_LINES)
-    gl.glColor3fv((1.0, 0.0, 0.0))
-    for p in self.points[0:2]:
-        gl.glVertex3fv(p)
-    gl.glColor3fv((0.0, 1.0, 0.0))
-    for p in self.points[2:4]:
-        gl.glVertex3fv(p)
-    gl.glColor3fv((0.0, 0.0, 1.0))
-    for p in self.points[4:6]:
-        gl.glVertex3fv(p)
-    gl.glEnd()
+    gl.glPopMatrix()
 
-class Cube(object):
-  def __init__(self, center, r=0.5):
+  def rotate(self, angle):
+    self.angle = map(sum, zip(self.angle, angle))
+
+class Cube(Object):
+  def __init__(self, center, angle, r=1):
     self.center = center
-    self.rotation = (0, 0, 0)
+    self.angle = (0.0, 0.0, 0.0)
     self.points = ((r, -r, r), (r, r, r),
                    (-r, r, r), (-r, -r, r),
                    (r, -r, -r), (r, r, -r),
@@ -57,53 +60,23 @@ class Cube(object):
                   )
 
   def draw(self):
-    (rx, ry, rz) = self.rotation
-
-    gl.glTranslatef(*self.center)
-    gl.glRotatef(rx, 1, 0, 0)
-    gl.glRotatef(ry, 0, 1, 0)
-    gl.glRotatef(rz, 0, 0, 1)
+    draw_quads(self)
     
-    gl.glBegin(gl.GL_QUADS)
-    for (face, normal, color) in zip(self.faces, self.normals, self.colors):
-      gl.glNormal3fv(normal)
-      gl.glColor3fv(color)
-      for p in face:
-        gl.glVertex3fv(self.points[p])
-    gl.glEnd()
-
-    self.rotate((1.0, 1.0, 0.0))
-
-  def rotate(self, rotation):
-    self.rotation = map(sum, zip(self.rotation, rotation))
-    
-class Wall(object):
-  def __init__(self, center, rotation, width, height, delta):
+class Wall(Object):
+  def __init__(self, center, angle, width, height):
     self.center = center
-    self.rotation = rotation
-    points = []
-    x = -width / 2
-    while x <= width / 2:
-      points.append((x, height / 2, 0))
-      points.append((x, -height / 2, 0))
-      x += delta
-    y = -height / 2
-    while y <= height / 2:
-      points.append((-width / 2, y, 0))
-      points.append((width / 2, y, 0))
-      y += delta
-    self.points = tuple(points)
+    self.angle = angle
+    self.points = ((width / 2, -height / 2, 0),
+                   (width / 2, height / 2, 0),
+                   (-width / 2, height / 2, 0),
+                   (-width / 2, -height / 2, 0),
+                  )
+    self.faces = ((0, 1, 2, 3),
+                 )
+    self.normals = ((0, 0, 1),
+                   )
+    self.colors = ((1, 1, 1),
+                  )
 
   def draw(self):
-    (rx, ry, rz) = self.rotation
-
-    gl.glTranslatef(*self.center)
-    gl.glRotatef(rx, 1, 0, 0)
-    gl.glRotatef(ry, 0, 1, 0)
-    gl.glRotatef(rz, 0, 0, 1)
-
-    gl.glBegin(gl.GL_LINES)
-    gl.glColor3fv((1.0, 1.0, 1.0))
-    for p in self.points:
-        gl.glVertex3fv(p)
-    gl.glEnd()
+    draw_quads(self)
