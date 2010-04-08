@@ -36,16 +36,10 @@ class Scene(object):
     gl.glClearDepth(1.0)
     gl.glEnable(gl.GL_DEPTH_TEST)
     gl.glDepthFunc(gl.GL_LEQUAL)
+    gl.glHint(gl.GL_PERSPECTIVE_CORRECTION_HINT, gl.GL_NICEST)
     gl.glFrontFace(gl.GL_CCW)
     gl.glEnable(gl.GL_CULL_FACE)
     gl.glEnable(gl.GL_COLOR_MATERIAL);
-    gl.glHint(gl.GL_PERSPECTIVE_CORRECTION_HINT, gl.GL_NICEST)
-
-  def convert_dev_to_user(self, x, y):
-    (centerx, centery) = self.center
-    x -= centerx
-    y = (self.height - 1 - y) - centery
-    return (x / (centerx / 2), y / (centery / 2))
 
   def handle_events(self):
     pass
