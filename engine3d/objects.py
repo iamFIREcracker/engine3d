@@ -75,7 +75,7 @@ class Wall(Object):
                  )
     self.normals = ((0, 0, 1),
                    )
-    self.colors = ((1, 1, 1),
+    self.colors = ((.6, .6, .6),
                   )
 
   def draw(self):

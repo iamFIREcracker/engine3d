@@ -36,6 +36,9 @@ class Scene(object):
     gl.glClearDepth(1.0)
     gl.glEnable(gl.GL_DEPTH_TEST)
     gl.glDepthFunc(gl.GL_LEQUAL)
+    gl.glFrontFace(gl.GL_CCW)
+    gl.glEnable(gl.GL_CULL_FACE)
+    gl.glEnable(gl.GL_COLOR_MATERIAL);
     gl.glHint(gl.GL_PERSPECTIVE_CORRECTION_HINT, gl.GL_NICEST)
 
   def convert_dev_to_user(self, x, y):
