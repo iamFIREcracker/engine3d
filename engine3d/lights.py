@@ -2,18 +2,24 @@
 
 from __future__ import division
 
-from OpenGL import GL as gl
+from OpenGL.GL import *
 
 class Light(object):
-  def __init__(self, center):
+  def __init__(self, position):
     self.lid = None
-    self.center = center
+    self.ambient = (0, 0, 0, 1)
+    self.diffuse = (1, 1, 1, 1)
+    self.specular = (1, 1, 1, 1)
+    self.position = position
     
   def enable(self):
-    gl.glEnable(self.lid)
+    glEnable(self.lid)
 
   def place(self):
-    gl.glLightfv(self.lid, gl.GL_POSITION, self.center)
+    glLightfv(self.lid, GL_AMBIENT, self.ambient)
+    glLightfv(self.lid, GL_DIFFUSE, self.diffuse)
+    glLightfv(self.lid, GL_SPECULAR, self.specular)
+    glLightfv(self.lid, GL_POSITION, self.position)
 
 class LightSystem(object):
   def __init__(self):
@@ -23,13 +29,13 @@ class LightSystem(object):
   
   def toggle(self):
     if self._toggle:
-      gl.glDisable(gl.GL_LIGHTING)
+      glDisable(GL_LIGHTING)
     else:
-      gl.glEnable(gl.GL_LIGHTING)
+      glEnable(GL_LIGHTING)
     self._toggle = not self._toggle
 
   def add(self, light):
-    light.lid = getattr(gl, 'GL_LIGHT%d' % self._lid) 
+    light.lid = eval('GL_LIGHT%d' % self._lid) 
     self.lights.append(light)
     self._lid += 1
 
