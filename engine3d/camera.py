@@ -12,7 +12,27 @@ class Camera(object):
   def __init__(self):
     self.center = (0.0, 0.0, 0.0)
     self.angle = (0.0, 0.0, 0.0)
-    self.rotated = True
+    self._directions = ((0.0, 0.0, -1.0), (1.0, 0.0, 0.0))
+    self._rotated = True
+
+  @property
+  def directions(self):
+    if self._rotated:
+      (cx, cy, cz) = map(lambda v: cos(v * pidiv180), self.angle)
+      (sx, sy, sz) = map(lambda v: sin(v * pidiv180), self.angle)
+      self._directions = ((cy * cz,
+                           cy * sz,
+                           -sy,
+                          ),
+                          (
+                          ),
+                          (cx * cz * sy + sx * sz,
+                           -cz * sx + cx * sy * sz,
+                           cx * cy,
+                          ),
+                         )
+      self._rotated = False
+    return self._directions
 
   def place(self):
     (cx, cy, cz) = self.center
@@ -29,21 +49,11 @@ class Camera(object):
 
   def rotate(self, angle):
     self.angle = map(sum, zip(self.angle, angle))
-    self.rotated = True
+    self._rotated = True
 
   def forward(self, offset):
-    if self.rotated:
-      self.cos = map(lambda v: cos(v * pidiv180), self.angle)
-      self.sin = map(lambda v: sin(v * pidiv180), self.angle)
-      self.rotated = False
-    (cx, cy, cz) = self.cos
-    (sx, sy, sz) = self.sin
-
-    direction = ((cx * cz * sy + sx * sz) * -offset,
-                 (-cz * sx + cx * sy * sz) * -offset,
-                 (cx * cy) * -offset,
-                )
-    self.move(direction)
+    (_, _, dz) = self.directions
+    self.move(map(lambda v: v * -offset, dz))
 
   def up(self, offset):
     direction = (0,
@@ -53,18 +63,8 @@ class Camera(object):
     self.move(direction)
     
   def right(self, offset):
-    if self.rotated:
-      self.cos = map(lambda v: cos(v * pidiv180), self.angle)
-      self.sin = map(lambda v: sin(v * pidiv180), self.angle)
-      self.rotated = False
-    (cx, cy, cz) = self.cos
-    (sx, sy, sz) = self.sin
-
-    direction = ((cy * cz) * offset,
-                 (cy * sz) * offset,
-                 (-sy) * offset,
-                )
-    self.move(direction)
+    (dx, _, _) = self.directions
+    self.move(map(lambda v: v * offset, dx))
 
   def pitch(self, angle):
     self.rotate((angle, 0, 0))
