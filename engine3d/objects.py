@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+from numpy import array
+from numpy import arange
 from OpenGL.GL import *
 from OpenGL.arrays import vbo
-from numpy import array
+from PIL.Image import open
 
 class Object(object):
   def render(self):
@@ -36,7 +38,7 @@ class Object(object):
       glVertexPointer(3, GL_FLOAT, 36, self.vbo)
       glColorPointer(3, GL_FLOAT, 36, self.vbo + 12)
       glNormalPointer(GL_FLOAT, 36, self.vbo + 24)
-      glDrawArrays(GL_TRIANGLES, 0, len(self.vertices))
+      glDrawArrays(self.shape, 0, len(self.vertices))
     finally:
       self.vbo.unbind()
       glDisableClientState(GL_VERTEX_ARRAY)
@@ -47,6 +49,7 @@ class Cube(Object):
   def __init__(self, center, angle, r=1):
     self.center = center
     self.angle = (0.0, 0.0, 0.0)
+    self.shape = GL_TRIANGLES
     self.vertices = [[1, -1, 1], [1, 1, 1], [-1, 1, 1], # front
                      [-1, 1, 1], [-1, -1, 1], [1, -1, 1],
                      [-1, -1, 1], [-1, 1, 1], [-1, 1, -1], # left
@@ -92,17 +95,20 @@ class Wall(Object):
   def __init__(self, center, angle, width, height):
     self.center = center
     self.angle = angle
-    self.vertices = [[width / 2, -height / 2, 0],
-                     [width / 2, height / 2, 0],
-                     [-width / 2, height / 2, 0],
-                     [-width / 2, height / 2, 0],
-                     [-width / 2, -height /2, 0],
-                     [width / 2, -height / 2, 0],
-                    ]
-    self.colors = [[0.6, 0.6, 0.6], [0.6, 0.6, 0.6], [0.6, 0.6, 0.6],
-                   [0.6, 0.6, 0.6], [0.6, 0.6, 0.6], [0.6, 0.6, 0.6],
-                  ]
-    self.normals = [[0, 0, 1], [0, 0, 1], [0, 0, 1],
-                    [0, 0, 1], [0, 0, 1], [0, 0, 1],
-                   ]
+    self.shape = GL_TRIANGLES
+    self.vertices = []
+    self.colors = []
+    self.normals = []
+    for x in arange(-width / 2, width / 2, 1.0):
+      for y in arange(height / 2, -height / 2, -1.0):
+        self.vertices += [[x, y, 0], [x, y - 1, 0], [x + 1, y - 1, 0],
+                          [x + 1, y - 1, 0], [x + 1, y, 0], [x, y, 0],
+                         ]
+        self.colors += [[0.6, 0.6, 0.6]] * 6
+        self.normals += [[0, 0, 1]] * 6
     self.vbo = vbo.VBO(self.vertex_array)
+
+class WireWall(Wall):
+  def __init__(self, center, angle, width, height):
+    super(WireWall, self).__init__(center, angle, width, height)
+    self.shape = GL_LINES
