@@ -4,7 +4,7 @@ from __future__ import division
 from math import cos
 from math import sin
 
-from OpenGL import GL as gl
+from OpenGL.GL import *
 
 pidiv180 = 0.017453292519943295
 
@@ -38,11 +38,11 @@ class Camera(object):
     (cx, cy, cz) = self.center
     (ax, ay, az) = self.angle
 
-    gl.glLoadIdentity()
-    gl.glRotatef(-ax, 1, 0, 0)
-    gl.glRotatef(-ay, 0, 1, 0)
-    gl.glRotatef(-az, 0, 0, 1)
-    gl.glTranslatef(-cx, -cy, -cz)
+    glLoadIdentity()
+    glRotatef(-ax, 1, 0, 0)
+    glRotatef(-ay, 0, 1, 0)
+    glRotatef(-az, 0, 0, 1)
+    glTranslatef(-cx, -cy, -cz)
   
   def move(self, direction):
     self.center = map(sum, zip(self.center, direction))
