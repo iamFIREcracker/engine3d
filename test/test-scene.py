@@ -65,13 +65,21 @@ def main(argv):
     (width, height, framerate) = map(int, argv[1:])
 
   s = MyScene(width, height, framerate)
+
   s.camera.center = (0, 0, 10)
-  s.light_system.add(Light((-5, 0, 10, 1.0)))
-  s.light_system.add(Light((5, 0, 10, 1.0)))
-  s.objects = [Cube((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
-               Wall((0, 5, 0), (90, 0, 0), 50.0, 50.0),  # top
-               Wall((0, -5, 0), (-90, 0, 0), 50.0, 50.0), # bottom
-              ] 
+  s.light_system.add(Light((0, 1, 0, 1))),
+  s.object_system.add(Cube((0.0, 0.0, 0.0),
+                           (0.0, 0.0, 0.0),
+                           1))
+  s.object_system.add(Wall((0, 5, 0),
+                           (90, 0, 0),
+                           50.0,
+                           50.0))
+  s.object_system.add(Wall((0, -5, 0),
+                           (-90, 0, 0),
+                           50.0,
+                           50.0))
+
   s.mainloop()
 
 if __name__ == '__main__':

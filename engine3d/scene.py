@@ -8,6 +8,7 @@ from OpenGL.GLU import *
 
 from engine3d.camera import Camera
 from engine3d.lights import LightSystem
+from engine3d.objects import ObjectSystem
 
 class Scene(object):
   def __init__(self, width, height, framerate):
@@ -18,7 +19,7 @@ class Scene(object):
     self.camera = Camera()
 
     self.light_system = LightSystem()
-    self.objects = []
+    self.object_system = ObjectSystem()
 
   def resize(self):
     if self.height == 0:
@@ -48,8 +49,7 @@ class Scene(object):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     self.camera.place()
     self.light_system.place()
-    for item in self.objects:
-      item.render()
+    self.object_system.render()
 
   def mainloop(self):
     video_flags = pygame.OPENGL | pygame.DOUBLEBUF
