@@ -2,12 +2,12 @@
 
 import sys
 
-import pygame
-
 from engine3d.scene import Scene
 from engine3d.lights import Light
-from engine3d.objects import Cube
-from engine3d.objects import Wall
+import pygame
+
+from objects import Cube
+from objects import Wall
 
 class MyScene(Scene):
   def __init__(self, width, height, framerate):
