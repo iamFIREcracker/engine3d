@@ -5,20 +5,25 @@ from __future__ import division
 from OpenGL.GL import *
 
 class Light(object):
-  def __init__(self, position):
+  def __init__(self, ambient, diffuse, specular, position, attenuation):
     self.lid = None
-    self.ambient = (0, 0, 0, 1)
-    self.diffuse = (1, 1, 1, 1)
-    self.specular = (1, 1, 1, 1)
+    self.ambient = ambient
+    self.diffuse = diffuse
+    self.specular = specular
     self.position = position
+    self.attenuation = attenuation
     
   def enable(self):
     glEnable(self.lid)
 
   def place(self):
+    (ac, al, aq) = self.attenuation
     glLightfv(self.lid, GL_AMBIENT, self.ambient)
     glLightfv(self.lid, GL_DIFFUSE, self.diffuse)
     glLightfv(self.lid, GL_SPECULAR, self.specular)
+    glLightfv(self.lid, GL_CONSTANT_ATTENUATION, ac)
+    glLightfv(self.lid, GL_LINEAR_ATTENUATION, al)
+    glLightfv(self.lid, GL_QUADRATIC_ATTENUATION, aq)
     glLightfv(self.lid, GL_POSITION, self.position)
 
 class LightSystem(object):
@@ -34,9 +39,9 @@ class LightSystem(object):
       glEnable(GL_LIGHTING)
     self._toggle = not self._toggle
 
-  def add(self, light):
-    light.lid = eval('GL_LIGHT%d' % self._lid) 
-    self.lights.append(light)
+  def add(self, item):
+    item.lid = eval('GL_LIGHT%d' % self._lid) 
+    self.lights.append(item)
     self._lid += 1
 
   def enable(self):

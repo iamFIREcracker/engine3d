@@ -67,7 +67,16 @@ def main(argv):
   s = MyScene(width, height, framerate)
 
   s.camera.center = (0, 0, 10)
-  s.light_system.add(Light((0, 1, 0, 1))),
+  s.light_system.add(Light(ambient=(0.6, 0.0, 0.8, 1),
+                           diffuse=(1, 1, 1, 1),
+                           specular=(1, 1, 1, 1),
+                           position=(-5, 4, 5, 1.0),
+                           attenuation=(1, 0, 0.05)))
+  s.light_system.add(Light(ambient=(1, 0.5, 0, 1),
+                           diffuse=(1, 1, 1, 1),
+                           specular=(1, 1, 1, 1),
+                           position=(5, 4, 5, 1.0),
+                           attenuation=(1, 0, 0.05)))
   s.object_system.add(Cube((0.0, 0.0, 0.0),
                            (0.0, 0.0, 0.0),
                            1))
