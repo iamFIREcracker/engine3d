@@ -27,7 +27,7 @@ class Scene(object):
     glViewport(0, 0, self.width, self.height)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(45, self.width / self.height, 0.1, 100.0)
+    gluPerspective(40, self.width / self.height, 0.1, 100.0)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 

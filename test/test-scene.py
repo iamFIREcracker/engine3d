@@ -8,6 +8,7 @@ import pygame
 
 from objects import Cube
 from objects import Wall
+from objects import Checkerboard
 
 class MyScene(Scene):
   def __init__(self, width, height, framerate):
@@ -77,17 +78,27 @@ def main(argv):
                            specular=(1, 1, 1, 1),
                            position=(5, 4, 5, 1.0),
                            attenuation=(1, 0, 0.05)))
+  s.light_system.add(Light(ambient=(.1, 1, .2, 1),
+                           diffuse=(1, 1, 1, 1),
+                           specular=(1, 1, 1, 1),
+                           position=(5, -4, 5, 1.0),
+                           attenuation=(1, 0, 0.05)))
+  s.light_system.add(Light(ambient=(.1, .2, 1, 1),
+                           diffuse=(1, 1, 1, 1),
+                           specular=(1, 1, 1, 1),
+                           position=(-5, -4, 5, 1.0),
+                           attenuation=(1, 0, 0.05)))
   s.object_system.add(Cube((0.0, 0.0, 0.0),
                            (0.0, 0.0, 0.0),
                            1))
-  s.object_system.add(Wall((0, 5, 0),
-                           (90, 0, 0),
-                           50.0,
-                           50.0))
-  s.object_system.add(Wall((0, -5, 0),
-                           (-90, 0, 0),
-                           50.0,
-                           50.0))
+  s.object_system.add(Checkerboard((0, 5, 0),
+                                   (90, 0, 0),
+                                   50.0,
+                                   50.0))
+  s.object_system.add(Checkerboard((0, -5, 0),
+                                   (-90, 0, 0),
+                                   50.0,
+                                   50.0))
 
   s.mainloop()
 
