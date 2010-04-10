@@ -1,76 +1,108 @@
 #!/usr/bin/env python
 
-from OpenGL import GL as gl
+from OpenGL.GL import *
+from OpenGL.arrays import vbo
+from numpy import array
 
 class Object(object):
   def render(self):
     (ax, ay, az) = self.angle
 
-    gl.glPushMatrix()
+    glPushMatrix()
     
-    gl.glTranslatef(*self.center)
-    gl.glRotatef(ax, 1, 0, 0)
-    gl.glRotatef(ay, 0, 1, 0)
-    gl.glRotatef(az, 0, 0, 1)
+    glTranslatef(*self.center)
+    glRotatef(ax, 1, 0, 0)
+    glRotatef(ay, 0, 1, 0)
+    glRotatef(az, 0, 0, 1)
     self.draw()
 
-    gl.glPopMatrix()
+    glPopMatrix()
+
+  @property
+  def vertex_array(self):
+    return array([v + c + n for (v, c, n) in zip(self.vertices,
+                                                 self.colors,
+                                                 self.normals)], 'f')
 
   def rotate(self, angle):
     self.angle = map(sum, zip(self.angle, angle))
 
   def draw(self):
-    gl.glBegin(gl.GL_TRIANGLES)
-    for (face, normal, color) in zip(self.faces, self.normals, self.colors):
-      gl.glNormal3fv(normal)
-      gl.glColor3fv(color)
-      for p in face:
-        gl.glVertex3fv(self.points[p])
-    gl.glEnd()
+    self.vbo.bind()
+    try:
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_COLOR_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glVertexPointer(3, GL_FLOAT, 36, self.vbo)
+      glColorPointer(3, GL_FLOAT, 36, self.vbo + 12)
+      glNormalPointer(GL_FLOAT, 36, self.vbo + 24)
+      glDrawArrays(GL_TRIANGLES, 0, len(self.vertices))
+    finally:
+      self.vbo.unbind()
+      glDisableClientState(GL_VERTEX_ARRAY)
+      glDisableClientState(GL_COLOR_ARRAY);
+      glDisableClientState(GL_NORMAL_ARRAY);
 
 class Cube(Object):
   def __init__(self, center, angle, r=1):
     self.center = center
     self.angle = (0.0, 0.0, 0.0)
-    self.points = ((r, -r, r), (r, r, r),
-                   (-r, r, r), (-r, -r, r),
-                   (r, -r, -r), (r, r, -r),
-                   (-r, r, -r), (-r, -r, -r),
-                  )
-    self.faces = ((0, 1, 2), (2, 3, 0),
-                  (3, 2, 6), (6, 7, 3),
-                  (7, 6, 5), (5, 4, 7),
-                  (4, 5, 1), (1, 0, 4),
-                  (1, 5, 6), (6, 2, 1),
-                  (4, 0, 3), (3, 7, 4),
-                 )
-    self.normals = ((0, 0, 1), (0, 0, 1),
-                    (-1, 0, 0), (-1, 0, 0),
-                    (0, 0, -1), (0, 0, -1),
-                    (1, 0, 0), (1, 0, 0),
-                    (0, 1, 0), (0, 1, 0),
-                    (0, -1, 0), (0, -1, 0),
-                   )
-    self.colors = ((0, 0, 1), (0, 0, 1),
-                   (0, 1, 0), (0, 1, 0),
-                   (0, 1, 1), (0, 1, 1),
-                   (1, 0, 0), (1, 0, 0),
-                   (1, 0, 1), (1, 0, 1),
-                   (1, 1, 0), (1, 1, 0),
-                  )
-    
+    self.vertices = [[1, -1, 1], [1, 1, 1], [-1, 1, 1], # front
+                     [-1, 1, 1], [-1, -1, 1], [1, -1, 1],
+                     [-1, -1, 1], [-1, 1, 1], [-1, 1, -1], # left
+                     [-1, 1, -1], [-1, -1, -1], [-1, -1, 1],
+                     [-1, -1, -1], [-1, 1, -1], [1, 1, -1], # rear
+                     [1, 1, -1], [1, -1, -1], [-1, -1, -1],
+                     [1, -1, -1], [1, 1, -1], [1, 1, 1], # right
+                     [1, 1, 1], [1, -1, 1], [1,-1, -1],
+                     [1, 1, 1], [1, 1, -1], [-1, 1, -1], # top
+                     [-1, 1, -1], [-1, 1, 1], [1, 1, 1],
+                     [1, -1, -1], [1, -1, 1], [-1, -1, 1], # bottom
+                     [-1, -1, 1], [-1, -1, -1], [1, -1, -1],
+                    ]
+    self.colors = [[0, 0, 1], [0, 0, 1], [0, 0, 1], # front
+                   [0, 0, 1], [0, 0, 1], [0, 0, 1],
+                   [0, 1, 0], [0, 1, 0], [0, 1, 0], # left
+                   [0, 1, 0], [0, 1, 0], [0, 1, 0],
+                   [0, 1, 1], [0, 1, 1], [0, 1, 1], # rear
+                   [0, 1, 1], [0, 1, 1], [0, 1, 1],
+                   [1, 0, 0], [1, 0, 0], [1, 0, 0], # right
+                   [1, 0, 0], [1, 0, 0], [1, 0, 0],
+                   [1, 0, 1], [1, 0, 1], [1, 0, 1], # top
+                   [1, 0, 1], [1, 0, 1], [1, 0, 1],
+                   [1, 1, 0], [1, 1, 0], [1, 1, 0], # bottom
+                   [1, 1, 0], [1, 1, 0], [1, 1, 0],
+                  ]
+    self.normals = [[0, 0, 1], [0, 0, 1], [0, 0, 1], # front
+                    [0, 0, 1], [0, 0, 1], [0, 0, 1], 
+                    [-1, 0, 0], [-1, 0, 0], [-1, 0, 0], # left
+                    [-1, 0, 0], [-1, 0, 0], [-1, 0, 0],
+                    [0, 0, -1], [0, 0, -1], [0, 0, -1], # rear
+                    [0, 0, -1], [0, 0, -1], [0, 0, -1],
+                    [0, 0, 1], [0, 0, 1], [0, 0, 1], # right
+                    [0, 0, 1], [0, 0, 1], [0, 0, 1],
+                    [0, 1, 0], [0, 1, 0], [0, 1, 0], # top
+                    [0, 1, 0], [0, 1, 0], [0, 1, 0],
+                    [0, -1, 0], [0, -1, 0], [0, -1, 0], # bottom
+                    [0, -1, 0], [0, -1, 0], [0, -1, 0],
+                   ]
+    self.vbo = vbo.VBO(self.vertex_array)
+
 class Wall(Object):
   def __init__(self, center, angle, width, height):
     self.center = center
     self.angle = angle
-    self.points = ((width / 2, -height / 2, 0),
-                   (width / 2, height / 2, 0),
-                   (-width / 2, height / 2, 0),
-                   (-width / 2, -height / 2, 0),
-                  )
-    self.faces = ((0, 1, 2), (2, 3, 0),
-                 )
-    self.normals = ((0, 0, 1), (0, 0, 1),
-                   )
-    self.colors = ((.6, .6, .6), (.6, .6, .6),
-                  )
+    self.vertices = [[width / 2, -height / 2, 0],
+                     [width / 2, height / 2, 0],
+                     [-width / 2, height / 2, 0],
+                     [-width / 2, height / 2, 0],
+                     [-width / 2, -height /2, 0],
+                     [width / 2, -height / 2, 0],
+                    ]
+    self.colors = [[0.6, 0.6, 0.6], [0.6, 0.6, 0.6], [0.6, 0.6, 0.6],
+                   [0.6, 0.6, 0.6], [0.6, 0.6, 0.6], [0.6, 0.6, 0.6],
+                  ]
+    self.normals = [[0, 0, 1], [0, 0, 1], [0, 0, 1],
+                    [0, 0, 1], [0, 0, 1], [0, 0, 1],
+                   ]
+    self.vbo = vbo.VBO(self.vertex_array)
