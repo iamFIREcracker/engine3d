@@ -51,6 +51,17 @@ class Object(object):
       glDisableClientState(GL_COLOR_ARRAY);
       glDisableClientState(GL_NORMAL_ARRAY);
 
+class ObjectSystem(object):
+  def __init__(self):
+    self.objects = []
+
+  def add(self, item):
+    self.objects.append(item)
+
+  def render(self):
+    for item in self.objects:
+      item.render()
+
 class Cube(Object):
   def __init__(self, center, angle, size):
     super(Cube, self).__init__(center, angle, size)
