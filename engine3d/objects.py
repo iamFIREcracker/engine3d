@@ -2,11 +2,22 @@
 
 from numpy import array
 from numpy import arange
-from OpenGL.GL import *
 from OpenGL.arrays import vbo
-from PIL.Image import open
+from OpenGL.GL import *
 
 class Object(object):
+  def __init__(self, center, angle, size):
+    self.center = center
+    self.angle = angle
+    self.size = size
+
+  @property
+  def vertex_array(self):
+    va = []
+    for (v, c, n) in zip(self.vertices, self.colors, self.normals):
+      va.append((v, c, n))
+    return array(va, 'f')
+
   def render(self):
     (ax, ay, az) = self.angle
 
@@ -16,15 +27,10 @@ class Object(object):
     glRotatef(ax, 1, 0, 0)
     glRotatef(ay, 0, 1, 0)
     glRotatef(az, 0, 0, 1)
+    glScalef(self.size, self.size, self.size)
     self.draw()
 
     glPopMatrix()
-
-  @property
-  def vertex_array(self):
-    return array([v + c + n for (v, c, n) in zip(self.vertices,
-                                                 self.colors,
-                                                 self.normals)], 'f')
 
   def rotate(self, angle):
     self.angle = map(sum, zip(self.angle, angle))
@@ -46,55 +52,41 @@ class Object(object):
       glDisableClientState(GL_NORMAL_ARRAY);
 
 class Cube(Object):
-  def __init__(self, center, angle, r=1):
-    self.center = center
-    self.angle = (0.0, 0.0, 0.0)
-    self.shape = GL_TRIANGLES
-    self.vertices = [[1, -1, 1], [1, 1, 1], [-1, 1, 1], # front
-                     [-1, 1, 1], [-1, -1, 1], [1, -1, 1],
-                     [-1, -1, 1], [-1, 1, 1], [-1, 1, -1], # left
-                     [-1, 1, -1], [-1, -1, -1], [-1, -1, 1],
-                     [-1, -1, -1], [-1, 1, -1], [1, 1, -1], # rear
-                     [1, 1, -1], [1, -1, -1], [-1, -1, -1],
-                     [1, -1, -1], [1, 1, -1], [1, 1, 1], # right
-                     [1, 1, 1], [1, -1, 1], [1,-1, -1],
-                     [1, 1, 1], [1, 1, -1], [-1, 1, -1], # top
-                     [-1, 1, -1], [-1, 1, 1], [1, 1, 1],
-                     [1, -1, -1], [1, -1, 1], [-1, -1, 1], # bottom
-                     [-1, -1, 1], [-1, -1, -1], [1, -1, -1],
+  def __init__(self, center, angle, size):
+    super(Cube, self).__init__(center, angle, size)
+    self.shape = GL_QUADS
+    self.vertices = [[1, -1, 1], [1, 1, 1], # front
+                     [-1, 1, 1], [-1, -1, 1],
+                     [-1, -1, 1], [-1, 1, 1], # left
+                     [-1, 1, -1], [-1, -1, -1],
+                     [-1, -1, -1], [-1, 1, -1], # rear
+                     [1, 1, -1], [1, -1, -1],
+                     [1, -1, -1], [1, 1, -1], # right
+                     [1, 1, 1], [1, -1, 1],
+                     [1, 1, 1], [1, 1, -1], # top
+                     [-1, 1, -1], [-1, 1, 1],
+                     [1, -1, -1], [1, -1, 1], # bottom
+                     [-1, -1, 1], [-1, -1, -1],
                     ]
-    self.colors = [[0, 0, 1], [0, 0, 1], [0, 0, 1], # front
-                   [0, 0, 1], [0, 0, 1], [0, 0, 1],
-                   [0, 1, 0], [0, 1, 0], [0, 1, 0], # left
-                   [0, 1, 0], [0, 1, 0], [0, 1, 0],
-                   [0, 1, 1], [0, 1, 1], [0, 1, 1], # rear
-                   [0, 1, 1], [0, 1, 1], [0, 1, 1],
-                   [1, 0, 0], [1, 0, 0], [1, 0, 0], # right
-                   [1, 0, 0], [1, 0, 0], [1, 0, 0],
-                   [1, 0, 1], [1, 0, 1], [1, 0, 1], # top
-                   [1, 0, 1], [1, 0, 1], [1, 0, 1],
-                   [1, 1, 0], [1, 1, 0], [1, 1, 0], # bottom
-                   [1, 1, 0], [1, 1, 0], [1, 1, 0],
+    self.colors = [[0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], # front
+                   [0, 1, 0], [0, 1, 0], [0, 1, 0], [0, 1, 0], # left
+                   [0, 1, 1], [0, 1, 1], [0, 1, 1], [0, 1, 1], # rear
+                   [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0], # right
+                   [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1], # top
+                   [1, 1, 0], [1, 1, 0], [1, 1, 0], [1, 1, 0], # bottom
                   ]
-    self.normals = [[0, 0, 1], [0, 0, 1], [0, 0, 1], # front
-                    [0, 0, 1], [0, 0, 1], [0, 0, 1], 
-                    [-1, 0, 0], [-1, 0, 0], [-1, 0, 0], # left
-                    [-1, 0, 0], [-1, 0, 0], [-1, 0, 0],
-                    [0, 0, -1], [0, 0, -1], [0, 0, -1], # rear
-                    [0, 0, -1], [0, 0, -1], [0, 0, -1],
-                    [0, 0, 1], [0, 0, 1], [0, 0, 1], # right
-                    [0, 0, 1], [0, 0, 1], [0, 0, 1],
-                    [0, 1, 0], [0, 1, 0], [0, 1, 0], # top
-                    [0, 1, 0], [0, 1, 0], [0, 1, 0],
-                    [0, -1, 0], [0, -1, 0], [0, -1, 0], # bottom
-                    [0, -1, 0], [0, -1, 0], [0, -1, 0],
+    self.normals = [[0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], # front
+                    [-1, 0, 0], [-1, 0, 0], [-1, 0, 0], [-1, 0, 0], # left
+                    [0, 0, -1], [0, 0, -1], [0, 0, -1], [0, 0, -1], # rear
+                    [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], # right
+                    [0, 1, 0], [0, 1, 0], [0, 1, 0], [0, 1, 0], # top
+                    [0, -1, 0], [0, -1, 0], [0, -1, 0], [0, -1, 0], # bottom
                    ]
     self.vbo = vbo.VBO(self.vertex_array)
 
 class Wall(Object):
   def __init__(self, center, angle, width, height):
-    self.center = center
-    self.angle = angle
+    super(Wall, self).__init__(center, angle, 1)
     self.shape = GL_TRIANGLES
     self.vertices = []
     self.colors = []
